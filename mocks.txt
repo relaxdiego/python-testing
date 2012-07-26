@@ -1,0 +1,39 @@
+>>> from mocker import Mocker
+>>> import operations
+>>> mocker = Mocker()
+>>> p1 = mocker.mock()
+>>> p2 = mocker.mock()
+>>> mocker.replay()
+>>> m = operations.multiply(p1, p2)
+>>> m.operands == (p1, p2)
+True
+>>> mocker.restore()
+>>> mocker.verify()
+
+>>> mocker = Mocker()
+>>> p1 = mocker.mock()
+>>> p1.evaluate({})             #doctest: +ELLIPSIS
+<mocker.Mock object at ...>
+>>> mocker.result(97.43)
+>>> mocker.replay()
+>>> m = operations.multiply(p1)
+>>> m.evaluate({})
+Traceback (most recent call last):
+ValueError: multiply without at least two operands is meaningless
+>>> mocker.restore()
+>>> mocker.verify()
+>>> mocker = Mocker()
+>>> p1 = mocker.mock()
+>>> p1.evaluate({})             #doctest: +ELLIPSIS
+<mocker.Mock object at ...>
+>>> mocker.result(97.43)
+>>> p2 = mocker.mock()
+>>> p2.evaluate({})             #doctest: +ELLIPSIS
+<mocker.Mock object at ...>
+>>> mocker.result(-16.25)
+>>> mocker.replay()
+>>> m = operations.multiply(p1, p2)
+>>> round(m.evaluate({}), 2)
+-1583.24
+>>> mocker.restore()
+>>> mocker.verify()

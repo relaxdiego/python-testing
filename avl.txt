@@ -1,0 +1,149 @@
+# An AVL Tree consists of a collection of nodes organized in a binary
+# tree structure. Each node has left and right children, each of which
+# may be either None or another tree node. Each node has a key, which
+# must be comparable via the less-than operator. Each node has a value.
+# Each node also has a height number, measuring how far the node is from
+# being a leaf of the tree -- a node with height 0 is a leaf.
+
+# The binary tree structure is maintained in ordered form, meaning that
+# of a node's two children, the left child has a key that compares
+# less than the node's key and the right child has a key that compares
+# greater than the node's key.
+
+# The binary tree structure is maintained in a balanced form, meaning
+# that for any given node, the heights of its children are either the
+# same or only differ by 1.
+
+>>> from avl_tree import AVL
+
+>>> def valid_state(node):
+...     if node is None:
+...         return
+...     if node.left is not None:
+...         assert isinstance(node.left, AVL)
+...         assert node.left.key < node.key
+...         left_height = node.left.height + 1
+...     else:
+...         left_height = 0
+...     if node.right is not None:
+...         assert isinstance(node.right, AVL)
+...         assert node.right.key > node.key
+...         right_height = node.right.height + 1
+...     else:
+...         right_height = 0
+...     assert abs(left_height - right_height) < 2
+...     node.key < node.key
+...     node.value
+>>> def valid_tree(node):
+...     if node is None:
+...         return
+...     valid_state(node)
+...     valid_tree(node.left)
+...     valid_tree(node.right)
+
+
+# The node constructor takes either a pair of parameters representing
+# a key and a value, or a dict object representing the key-value pairs
+# with which to initialize a new tree.#
+
+# >>> valid_state(AVL(2, 'Testing is fun'))#
+
+# The following methods target the node on which they are called, and
+# can be considered part of the internal mechanism of the tree:#
+
+# Each node has a recalculate_height method, which correctly sets the
+# height number.
+
+>>> def make_test_tree():
+...     root = AVL(7, 'seven')
+...     root.height = 2
+...     root.left = AVL(3, 'three')
+...     root.left.height = 1
+...     root.left.right = AVL(4, 'four')
+...     root.right = AVL(10, 'ten')
+...     return root
+>>> tree = make_test_tree()
+>>> tree.height = 0
+>>> tree.recalculate_height()
+>>> tree.height
+2
+
+
+# Each node has a make_deletable method, which exchanges the positions
+# of the node and one of its leaf descendants, such that the the tree
+# ordering of the nodes remains correct.
+
+>>> tree = make_test_tree()
+>>> target = tree.make_deletable()
+>>> (tree.value, tree.height)
+('four', 2)
+>>> (target.value, target.height)
+('seven', 0)
+
+# Each node has rotate_clockwise and rotate_counterclockwise methods.
+# Rotate_clockwise takes the node's right child and places it where
+# the node was, making the node into the left child of its own former
+# child. Other nodes in the vicinity are moved so as to maintain
+# the tree ordering. The opposite operation is performed by rotate_
+# counterclockwise.
+
+>>> tree = make_test_tree()
+>>> tree.value
+'seven'
+>>> tree.left.value
+'three'
+
+>>> tree.rotate_counterclockwise()
+>>> tree.value
+'three'
+>>> tree.left
+None
+>>> tree.right.value
+'seven'
+>>> tree.right.left.value
+'four'
+>>> tree.right.right.value
+'ten'
+>>> tree.right.left.value
+'four'
+>>> tree.left is None
+True
+
+>>> tree.rotate_clockwise()
+>>> tree.value
+'seven'
+>>> tree.left.value
+'three'
+>>> tree.left.right.value
+'four'
+>>> tree.right.value
+'ten'
+>>> tree.right.left is None
+True
+>>> tree.left.left is None
+True
+
+# Each node has a locate method, taking a key as a parameter, which
+# searches the node and its descendants for a node with the specified
+# key, and either returns that node or raises a KeyError.
+
+>>> tree = make_test_tree()
+>>> tree.locate(4).value
+'four'
+>>> tree.locate(17)                     # doctest: +ELLIPSIS
+Traceback (most recent call last):
+KeyError: ...
+
+# The following methods target the whole tree rooted at the current
+# node. The intent is that they will be called on the root node:
+
+# Each node has a get method taking a key as a parameter, which locates
+# the value associated with the specified key and returns it, or raises
+# KeyError if the key is not associated with any value in the tree.
+
+# Each node has a set method taking a key and a value as parameters, and
+# associating the key and value within the tree.
+
+# Each node has a remove method taking a key as a parameter, and
+# removing the key and its associated value from the tree. It raises
+# KeyError if no values was associated with that key.
